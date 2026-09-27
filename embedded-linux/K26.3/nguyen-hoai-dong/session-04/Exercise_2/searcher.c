@@ -8,8 +8,9 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2) 
+    if (argc < 3) 
     {
+        perror("searcher: missing arguments");
         return 2;
     }
     
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
 
     FILE *fp = fopen(argv[2], "r");
     if (fp == NULL) {
+        perror("searcher: fopen");
         return 2;
     }
 
@@ -42,7 +44,7 @@ int main(int argc, char *argv[])
         token = strtok(NULL, "|");
         float gpa = atof(token);
         printf("  GPA     : %0.2f\n", gpa);
-        if(gpa >= 8.0)
+        if(gpa >= 8.5)
         {
             printf("  Grade   : Excellent\n");
         }

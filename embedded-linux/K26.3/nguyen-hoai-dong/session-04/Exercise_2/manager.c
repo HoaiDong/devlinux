@@ -51,13 +51,15 @@ int main()
         }
         else
         {
-            fflush(stdout);
+            fflush(stdin);  //fflush buffer stdin
+            fflush(stdout); //fflush buffer stdout
             pid = fork();
 
             if (pid == 0)
             {
+                extern char **environ; //tham số execve để child process kế thừa environment variables của parent
                 char *argv[] = {"./searcher", student_id, "students.txt", NULL};
-                execve("./searcher", argv, NULL);
+                execve("./searcher", argv, environ);
                 /* Only reached if execve() FAILS */
                perror("execve failed"); 
                exit(2);
