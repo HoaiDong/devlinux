@@ -4,28 +4,6 @@
 #include <sys/wait.h>
 #include <string.h>
 
-typedef struct {
-    int   id;
-    char  name[50];
-    int   quantity;
-    float unit_price;
-} Order;
-
-Order orders[3] = {
-    {1, "Backpack", 2, 350000},
-    {2, "Shoes",    1, 500000},
-    {3, "Hat",      3, 120000}
-};
-
-void process_order(Order o) {
-    float total = o.quantity * o.unit_price;
-    printf("[CHILD-%d] PID: %d | PPID: %d\n", o.id, getpid(), getppid());
-    printf("[CHILD-%d] %s x%d — Total: %.0f VND\n",
-           o.id, o.name, o.quantity, total);
-    printf("[CHILD-%d] Processing... (sleep 2s)\n\n", o.id);
-    sleep(2);
-}
-
 int main()
 {
 	pid_t pid;   
