@@ -1,0 +1,163 @@
+=== 1. Full service log ===
+Thg 10 04 22:55:50 dong systemd[1]: Started Logger Service.
+Thg 10 04 22:55:50 dong logger[5914]: Service running normally, cycle 1
+Thg 10 04 22:55:50 dong logger[5914]: Memory usage high: 93%
+Thg 10 04 22:55:50 dong logger[5914]: Failed to connect to database, retry 1
+Thg 10 04 22:55:52 dong logger[5914]: Service running normally, cycle 2
+Thg 10 04 22:55:52 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:55:52 dong logger[5914]: Failed to connect to database, retry 2
+Thg 10 04 22:55:54 dong logger[5914]: Service running normally, cycle 3
+Thg 10 04 22:55:54 dong logger[5914]: Memory usage high: 92%
+Thg 10 04 22:55:54 dong logger[5914]: Failed to connect to database, retry 3
+Thg 10 04 22:55:56 dong logger[5914]: Service running normally, cycle 4
+Thg 10 04 22:55:56 dong logger[5914]: Memory usage high: 90%
+Thg 10 04 22:55:56 dong logger[5914]: Failed to connect to database, retry 4
+Thg 10 04 22:55:58 dong logger[5914]: Service running normally, cycle 5
+Thg 10 04 22:55:58 dong logger[5914]: Memory usage high: 88%
+Thg 10 04 22:55:58 dong logger[5914]: Failed to connect to database, retry 5
+Thg 10 04 22:56:00 dong logger[5914]: Service running normally, cycle 6
+Thg 10 04 22:56:00 dong logger[5914]: Memory usage high: 90%
+Thg 10 04 22:56:00 dong logger[5914]: Failed to connect to database, retry 6
+Thg 10 04 22:56:02 dong logger[5914]: Service running normally, cycle 7
+Thg 10 04 22:56:02 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:56:02 dong logger[5914]: Failed to connect to database, retry 7
+Thg 10 04 22:56:04 dong logger[5914]: Service running normally, cycle 8
+Thg 10 04 22:56:04 dong logger[5914]: Memory usage high: 92%
+Thg 10 04 22:56:04 dong logger[5914]: Failed to connect to database, retry 8
+Thg 10 04 22:56:06 dong logger[5914]: Service running normally, cycle 9
+Thg 10 04 22:56:06 dong logger[5914]: Memory usage high: 89%
+Thg 10 04 22:56:06 dong logger[5914]: Failed to connect to database, retry 9
+Thg 10 04 22:56:08 dong logger[5914]: Service running normally, cycle 10
+Thg 10 04 22:56:08 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:56:08 dong logger[5914]: Failed to connect to database, retry 10
+Thg 10 04 22:56:10 dong logger[5914]: Service running normally, cycle 11
+Thg 10 04 22:56:10 dong logger[5914]: Memory usage high: 82%
+Thg 10 04 22:56:10 dong logger[5914]: Failed to connect to database, retry 11
+Thg 10 04 22:56:12 dong logger[5914]: Service running normally, cycle 12
+Thg 10 04 22:56:12 dong logger[5914]: Memory usage high: 87%
+Thg 10 04 22:56:12 dong logger[5914]: Failed to connect to database, retry 12
+Thg 10 04 22:56:14 dong logger[5914]: Service running normally, cycle 13
+Thg 10 04 22:56:14 dong logger[5914]: Memory usage high: 85%
+Thg 10 04 22:56:14 dong logger[5914]: Failed to connect to database, retry 13
+Thg 10 04 22:56:16 dong logger[5914]: Service running normally, cycle 14
+Thg 10 04 22:56:16 dong logger[5914]: Memory usage high: 84%
+Thg 10 04 22:56:16 dong logger[5914]: Failed to connect to database, retry 14
+Thg 10 04 22:56:18 dong logger[5914]: Service running normally, cycle 15
+Thg 10 04 22:56:18 dong logger[5914]: Memory usage high: 88%
+Thg 10 04 22:56:18 dong logger[5914]: Failed to connect to database, retry 15
+Thg 10 04 22:56:20 dong systemd[1]: logger.service: Main process exited, code=dumped, status=6/ABRT
+Thg 10 04 22:56:20 dong systemd[1]: logger.service: Failed with result 'core-dump'.
+=== 2. Warning level and above ===
+Thg 10 04 22:55:50 dong logger[5914]: Memory usage high: 93%
+Thg 10 04 22:55:50 dong logger[5914]: Failed to connect to database, retry 1
+Thg 10 04 22:55:52 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:55:52 dong logger[5914]: Failed to connect to database, retry 2
+Thg 10 04 22:55:54 dong logger[5914]: Memory usage high: 92%
+Thg 10 04 22:55:54 dong logger[5914]: Failed to connect to database, retry 3
+Thg 10 04 22:55:56 dong logger[5914]: Memory usage high: 90%
+Thg 10 04 22:55:56 dong logger[5914]: Failed to connect to database, retry 4
+Thg 10 04 22:55:58 dong logger[5914]: Memory usage high: 88%
+Thg 10 04 22:55:58 dong logger[5914]: Failed to connect to database, retry 5
+Thg 10 04 22:56:00 dong logger[5914]: Memory usage high: 90%
+Thg 10 04 22:56:00 dong logger[5914]: Failed to connect to database, retry 6
+Thg 10 04 22:56:02 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:56:02 dong logger[5914]: Failed to connect to database, retry 7
+Thg 10 04 22:56:04 dong logger[5914]: Memory usage high: 92%
+Thg 10 04 22:56:04 dong logger[5914]: Failed to connect to database, retry 8
+Thg 10 04 22:56:06 dong logger[5914]: Memory usage high: 89%
+Thg 10 04 22:56:06 dong logger[5914]: Failed to connect to database, retry 9
+Thg 10 04 22:56:08 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:56:08 dong logger[5914]: Failed to connect to database, retry 10
+Thg 10 04 22:56:10 dong logger[5914]: Memory usage high: 82%
+Thg 10 04 22:56:10 dong logger[5914]: Failed to connect to database, retry 11
+Thg 10 04 22:56:12 dong logger[5914]: Memory usage high: 87%
+Thg 10 04 22:56:12 dong logger[5914]: Failed to connect to database, retry 12
+Thg 10 04 22:56:14 dong logger[5914]: Memory usage high: 85%
+Thg 10 04 22:56:14 dong logger[5914]: Failed to connect to database, retry 13
+Thg 10 04 22:56:16 dong logger[5914]: Memory usage high: 84%
+Thg 10 04 22:56:16 dong logger[5914]: Failed to connect to database, retry 14
+Thg 10 04 22:56:18 dong logger[5914]: Memory usage high: 88%
+Thg 10 04 22:56:18 dong logger[5914]: Failed to connect to database, retry 15
+Thg 10 04 22:56:20 dong systemd[1]: logger.service: Main process exited, code=dumped, status=6/ABRT
+Thg 10 04 22:56:20 dong systemd[1]: logger.service: Failed with result 'core-dump'.
+=== 3. Error level and above ===
+Thg 10 04 22:55:50 dong logger[5914]: Failed to connect to database, retry 1
+Thg 10 04 22:55:52 dong logger[5914]: Failed to connect to database, retry 2
+Thg 10 04 22:55:54 dong logger[5914]: Failed to connect to database, retry 3
+Thg 10 04 22:55:56 dong logger[5914]: Failed to connect to database, retry 4
+Thg 10 04 22:55:58 dong logger[5914]: Failed to connect to database, retry 5
+Thg 10 04 22:56:00 dong logger[5914]: Failed to connect to database, retry 6
+Thg 10 04 22:56:02 dong logger[5914]: Failed to connect to database, retry 7
+Thg 10 04 22:56:04 dong logger[5914]: Failed to connect to database, retry 8
+Thg 10 04 22:56:06 dong logger[5914]: Failed to connect to database, retry 9
+Thg 10 04 22:56:08 dong logger[5914]: Failed to connect to database, retry 10
+Thg 10 04 22:56:10 dong logger[5914]: Failed to connect to database, retry 11
+Thg 10 04 22:56:12 dong logger[5914]: Failed to connect to database, retry 12
+Thg 10 04 22:56:14 dong logger[5914]: Failed to connect to database, retry 13
+Thg 10 04 22:56:16 dong logger[5914]: Failed to connect to database, retry 14
+Thg 10 04 22:56:18 dong logger[5914]: Failed to connect to database, retry 15
+=== 4. Log from the last 1 minute ===
+Thg 10 04 22:55:50 dong systemd[1]: Started Logger Service.
+Thg 10 04 22:55:50 dong logger[5914]: Service running normally, cycle 1
+Thg 10 04 22:55:50 dong logger[5914]: Memory usage high: 93%
+Thg 10 04 22:55:50 dong logger[5914]: Failed to connect to database, retry 1
+Thg 10 04 22:55:52 dong logger[5914]: Service running normally, cycle 2
+Thg 10 04 22:55:52 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:55:52 dong logger[5914]: Failed to connect to database, retry 2
+Thg 10 04 22:55:54 dong logger[5914]: Service running normally, cycle 3
+Thg 10 04 22:55:54 dong logger[5914]: Memory usage high: 92%
+Thg 10 04 22:55:54 dong logger[5914]: Failed to connect to database, retry 3
+Thg 10 04 22:55:56 dong logger[5914]: Service running normally, cycle 4
+Thg 10 04 22:55:56 dong logger[5914]: Memory usage high: 90%
+Thg 10 04 22:55:56 dong logger[5914]: Failed to connect to database, retry 4
+Thg 10 04 22:55:58 dong logger[5914]: Service running normally, cycle 5
+Thg 10 04 22:55:58 dong logger[5914]: Memory usage high: 88%
+Thg 10 04 22:55:58 dong logger[5914]: Failed to connect to database, retry 5
+Thg 10 04 22:56:00 dong logger[5914]: Service running normally, cycle 6
+Thg 10 04 22:56:00 dong logger[5914]: Memory usage high: 90%
+Thg 10 04 22:56:00 dong logger[5914]: Failed to connect to database, retry 6
+Thg 10 04 22:56:02 dong logger[5914]: Service running normally, cycle 7
+Thg 10 04 22:56:02 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:56:02 dong logger[5914]: Failed to connect to database, retry 7
+Thg 10 04 22:56:04 dong logger[5914]: Service running normally, cycle 8
+Thg 10 04 22:56:04 dong logger[5914]: Memory usage high: 92%
+Thg 10 04 22:56:04 dong logger[5914]: Failed to connect to database, retry 8
+Thg 10 04 22:56:06 dong logger[5914]: Service running normally, cycle 9
+Thg 10 04 22:56:06 dong logger[5914]: Memory usage high: 89%
+Thg 10 04 22:56:06 dong logger[5914]: Failed to connect to database, retry 9
+Thg 10 04 22:56:08 dong logger[5914]: Service running normally, cycle 10
+Thg 10 04 22:56:08 dong logger[5914]: Memory usage high: 81%
+Thg 10 04 22:56:08 dong logger[5914]: Failed to connect to database, retry 10
+Thg 10 04 22:56:10 dong logger[5914]: Service running normally, cycle 11
+Thg 10 04 22:56:10 dong logger[5914]: Memory usage high: 82%
+Thg 10 04 22:56:10 dong logger[5914]: Failed to connect to database, retry 11
+Thg 10 04 22:56:12 dong logger[5914]: Service running normally, cycle 12
+Thg 10 04 22:56:12 dong logger[5914]: Memory usage high: 87%
+Thg 10 04 22:56:12 dong logger[5914]: Failed to connect to database, retry 12
+Thg 10 04 22:56:14 dong logger[5914]: Service running normally, cycle 13
+Thg 10 04 22:56:14 dong logger[5914]: Memory usage high: 85%
+Thg 10 04 22:56:14 dong logger[5914]: Failed to connect to database, retry 13
+Thg 10 04 22:56:16 dong logger[5914]: Service running normally, cycle 14
+Thg 10 04 22:56:16 dong logger[5914]: Memory usage high: 84%
+Thg 10 04 22:56:16 dong logger[5914]: Failed to connect to database, retry 14
+Thg 10 04 22:56:18 dong logger[5914]: Service running normally, cycle 15
+Thg 10 04 22:56:18 dong logger[5914]: Memory usage high: 88%
+Thg 10 04 22:56:18 dong logger[5914]: Failed to connect to database, retry 15
+Thg 10 04 22:56:20 dong systemd[1]: logger.service: Main process exited, code=dumped, status=6/ABRT
+Thg 10 04 22:56:20 dong systemd[1]: logger.service: Failed with result 'core-dump'.
+=== 5. Crash point ===
+Thg 10 04 22:55:50 dong logger[5914]: Failed to connect to database, retry 1
+Thg 10 04 22:55:52 dong logger[5914]: Failed to connect to database, retry 2
+Thg 10 04 22:55:54 dong logger[5914]: Failed to connect to database, retry 3
+Thg 10 04 22:55:56 dong logger[5914]: Failed to connect to database, retry 4
+Thg 10 04 22:55:58 dong logger[5914]: Failed to connect to database, retry 5
+Thg 10 04 22:56:00 dong logger[5914]: Failed to connect to database, retry 6
+Thg 10 04 22:56:02 dong logger[5914]: Failed to connect to database, retry 7
+Thg 10 04 22:56:04 dong logger[5914]: Failed to connect to database, retry 8
+Thg 10 04 22:56:06 dong logger[5914]: Failed to connect to database, retry 9
+Thg 10 04 22:56:08 dong logger[5914]: Failed to connect to database, retry 10
+Thg 10 04 22:56:10 dong logger[5914]: Failed to connect to database, retry 11
+Thg 10 04 22:56:12 dong logger[5914]: Failed to connect to database, retry 12
+Thg 10 04 22:56:14 dong logger[5914]: Failed to connect to database, retry 13
+Thg 10 04 22:56:16 dong logger[5914]: Failed to connect to database, retry 14
+Thg 10 04 22:56:18 dong logger[5914]: Failed to connect to database, retry 15

@@ -1,0 +1,9 @@
+[Unit]
+Description=Logger Service
+
+[Service]
+ExecStart=/home/dong/Linux_Embeddded/99_Git/devlinux/embedded-linux/K26.3/nguyen-hoai-dong/session-06/Exercise_2/logger
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

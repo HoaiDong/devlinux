@@ -1,0 +1,12 @@
+[Unit]
+Description=Monitor Service
+StartLimitIntervalSec=30
+StartLimitBurst=3
+
+[Service]
+ExecStart=/home/dong/Linux_Embeddded/99_Git/devlinux/embedded-linux/K26.3/nguyen-hoai-dong/session-06/Exercise_1/monitor
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
