@@ -22,6 +22,7 @@ int main(void)
         printf("RUNNING...\n");
         sleep(1);
     }
+    
     printf("Service shutting down...\n");
     return 0;
 }
