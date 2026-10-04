@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-int loop = 1;
+volatile sig_atomic_t loop = 1;
 
 void handler(int sig)
 {
@@ -22,7 +22,7 @@ int main(void)
         printf("RUNNING...\n");
         sleep(1);
     }
-    
+
     printf("Service shutting down...\n");
     return 0;
 }

@@ -33,12 +33,18 @@ int main(void)
     setbuf(stderr, NULL);
 
     pthread_t thread_e, thread_a;
-    pthread_create(&thread_e, NULL, thread_err, NULL);
-    pthread_create(&thread_a, NULL, thread_abort, NULL);
-
-    while (1)
+    if (pthread_create(&thread_e, NULL, thread_err, NULL) != 0)
     {
-        sleep(1);
+        fprintf(stderr, LOG_ERR    "Create p_thread thread_err unsuccessfull\n");
+        exit(1);
     }
+    if (pthread_create(&thread_a, NULL, thread_abort, NULL) != 0)
+    {
+        fprintf(stderr, LOG_ERR    "Create p_thread thread_abort unsuccessfull\n");
+        exit(1);
+    }
+
+    pthread_join(thread_e, NULL);
+    pthread_join(thread_a, NULL);
     return 0;
 }
