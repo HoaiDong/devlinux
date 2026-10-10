@@ -47,7 +47,6 @@ int main(void)
         return 1;
     }
           
-
     while(1)
     {
         printf("[INFO] [PID: %d] Sensor reading #%d: temperature=%0.2f\n", getpid(), reading_count, random_double(0,100));
