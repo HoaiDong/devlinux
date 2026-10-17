@@ -14,6 +14,9 @@
 #define RX_BUF_SIZE 256
 #define MAX_CONN 64
 #define MAX_SENSORS 64
+#define PIPE_BUF 200
+#define DELAY_TIME 1
+
 typedef enum { STATE_COLLECTING, STATE_NORMAL, STATE_ALERT } sensor_state_t;
 typedef enum { SQL_CONNECTED, SQL_LOST, SQL_DOWN } sql_state_t;
 
@@ -65,7 +68,10 @@ typedef struct {
     sensor_state_t state;
 } datamgr_sensor_t;
 
-typedef struct { datamgr_sensor_t sensors[MAX_SENSORS]; size_t n; } datamgr_t;
+typedef struct { 
+    datamgr_sensor_t sensors[MAX_SENSORS]; 
+    size_t n; 
+} datamgr_t;
 typedef void (*sensor_handler_t)(datamgr_t *, datamgr_sensor_t *, const sensor_data_t *);
 
 /* ---- Storage manager + SQLite ---- */
@@ -106,4 +112,20 @@ typedef struct {
     volatile sig_atomic_t stop;
 } gateway_t;
 
+/* ---- Thread của main process ---- */
+typedef enum {
+    THREAD_CONNECTION = 0,
+    THREAD_DATA,
+    THREAD_STORAGE,
+    THREAD_COUNT
+} thread_id_t;
+
+/* ---- Định nghĩa ---- */
+typedef enum {
+    MAIN = 0,
+    CONN,
+    DATA,
+    STOR,
+    WEB
+} logFifo_source_t;
 #endif
