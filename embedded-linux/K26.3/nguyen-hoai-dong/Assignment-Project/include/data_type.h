@@ -16,6 +16,7 @@
 #define MAX_SENSORS 64
 #define PIPE_BUF 200
 #define DELAY_TIME 1
+#define MAX_LISTEN_FD 4 /* cổng P .. P+3 */
 
 typedef enum { STATE_COLLECTING, STATE_NORMAL, STATE_ALERT } sensor_state_t;
 typedef enum { SQL_CONNECTED, SQL_LOST, SQL_DOWN } sql_state_t;
@@ -35,6 +36,7 @@ typedef struct sbuffer_node {
     bool read_by_storage; /* Storage manager đã đọc */
     struct sbuffer_node *next;
 } sbuffer_node_t;
+
 typedef struct {
     sbuffer_node_t *head, *tail;
     size_t size;
@@ -54,7 +56,7 @@ typedef struct {
 } connection_t;
 
 typedef struct {
-    int listen_fd[4]; /* cổng P .. P+3 */
+    int listen_fd[MAX_LISTEN_FD]; /* cổng P .. P+3 */
     connection_t conns[MAX_CONN];
     size_t n_conns;
 } connmgr_t;

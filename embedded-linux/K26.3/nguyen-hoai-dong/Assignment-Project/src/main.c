@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <sys/socket.h>  // socket(), bind(), listen(), accept(), send(), recv()
+#include <netinet/in.h>  // struct sockaddr_in, htons(), INADDR_ANY
+#include <arpa/inet.h>  // inet_pton()
+#include <string.h>
+#include <sys/epoll.h>
 
 #include "data_type.h"
 #include "log_process.h"
@@ -27,22 +32,142 @@ int check_stop_flag(void)
     return status_flag;
 }
 
+void init_server_socket(void)
+{
+    for(int i = 0; i < MAX_LISTEN_FD; i++)
+    {
+        gateway_main.conn.listen_fd[i] = socket(AF_INET, SOCK_STREAM, 0);
+        struct sockaddr_in addr;
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(gateway_main.base_port + i);
+        if (inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr) != 1)
+        {
+            debug_log("[ERROR] inet_pton error");
+            close(gateway_main.conn.listen_fd[i]);
+            exit(1);
+        }
+
+        if (bind(gateway_main.conn.listen_fd[i], (struct sockaddr*)&addr, sizeof(struct sockaddr_in)) != 0)
+        {
+            debug_log("[ERROR] bind error");
+            close(gateway_main.conn.listen_fd[i]);
+            exit(1);
+        }
+        if (listen(gateway_main.conn.listen_fd[i], 1) != 0)
+        {
+            debug_log("[ERROR] listen error");
+            close(gateway_main.conn.listen_fd[i]);
+            exit(1);
+        }
+    }
+}
+
 void *pthread_connection_manager(void *arg)
 {
     (void)arg;
 
     debug_log("[Connection][Thread] Start");
     send_log("CONN", "Start");
-    while (1)
-    {    
-        debug_log("[Connection][Thread] running...");
-        send_log("CONN", "running...");
+
+    printf("Server listening port: %d\n", gateway_main.base_port);
+
+    
+    init_server_socket();
+
+    uint8_t buffer[100];    
+    int epfd = epoll_create1(0);
+    for(int i = 0; i < MAX_LISTEN_FD; i++)
+    {
+        struct epoll_event ev = {0};
+        ev.events = EPOLLIN;
+        ev.data.fd = gateway_main.conn.listen_fd[i];
+        epoll_ctl(epfd, EPOLL_CTL_ADD, gateway_main.conn.listen_fd[i], &ev);
+    }
+
+    int sensor_fd[MAX_CONN];
+    int sensor_fd_index = 0;
+    memset(sensor_fd, -2, sizeof(sensor_fd));
+
+    bool new_connection = 0;
+    while(1)
+    {
+        struct epoll_event events[10];
+        int n = epoll_wait(epfd, events, 10, 100);
+        for (int i = 0; i < n; i++)
+        {
+            new_connection = 0;
+            int fd = events[i].data.fd;
+
+            for(int i = 0; i < MAX_LISTEN_FD; i++)
+            {
+                if (fd == gateway_main.conn.listen_fd[i])
+                {
+                    if(sensor_fd_index < MAX_CONN)
+                    {
+                        sensor_fd[sensor_fd_index] = accept(gateway_main.conn.listen_fd[i], NULL, NULL);
+                        struct epoll_event sensor = {0};
+                        sensor.events = EPOLLIN;
+                        sensor.data.fd = sensor_fd[sensor_fd_index];
+                        epoll_ctl(epfd, EPOLL_CTL_ADD, sensor_fd[sensor_fd_index], &sensor);
+                        sensor_fd_index++;
+                        new_connection = 1;
+                        break;
+                    }
+                }
+            }
+
+            if(new_connection == 1)
+                continue;
+            
+            {
+                int return_value = recv(fd, buffer, sizeof(buffer), 0);
+                if(return_value == 0)
+                {
+                    printf("[SENSOR] SENSOR disconnected\n");
+                    epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
+                    close(fd);
+                } 
+                else if (return_value == -1)
+                {
+                    printf("[ERROR] recv error\n");
+                }   
+                else
+                {
+                    uint16_t sensor_id = 0;
+                    double temperature = 0;
+                    time_t sensor_ts;
+
+                    memcpy(&sensor_id, buffer, 2);
+                    memcpy(&temperature, &buffer[2], 8);
+                    memcpy(&sensor_ts, &buffer[10], 8);
+                    
+                    struct tm time_info;
+                    char time_format[20];
+                    localtime_r(&sensor_ts, &time_info);
+                    strftime(time_format, sizeof(time_format), "%Y-%m-%d %H:%M:%S", &time_info);
+
+                    char s[100];
+                    memset(s, 0, sizeof(s));
+                    
+                    snprintf(s, sizeof(s), "Sensor ID: %d - Temperature: %0.1f - Time: %s", sensor_id, temperature, time_format);
+                    debug_log(s);
+                }
+            }
+        }
 
         if(check_stop_flag() == 1)
             break;
-
-        sleep(DELAY_TIME);
     }
+    
+    for(int i = 0; i < sensor_fd_index; i++)
+    {
+        close(sensor_fd[i]);
+    }
+    for(int i = 0; i < MAX_LISTEN_FD; i++)
+    {
+        close(gateway_main.conn.listen_fd[i]);
+    }
+    
     debug_log("[Connection][Thread] end");
     send_log("CONN", "End");
     return NULL;
@@ -56,7 +181,7 @@ void *pthread_data_manager(void *arg)
     send_log("DATA", "Start");
     while (1)
     {
-        debug_log("[Data][Thread] Running...");
+        // debug_log("[Data][Thread] Running...");
         send_log("DATA", "running...");
 
         if(check_stop_flag() == 1)
@@ -77,7 +202,7 @@ void *pthread_storage_manager(void *arg)
     send_log("STOR", "Start");
     while (1)
     {
-        debug_log("[Storage][Thread] Running...");
+        // debug_log("[Storage][Thread] Running...");
         send_log("STOR", "running...");
 
         if(check_stop_flag() == 1)
@@ -127,6 +252,9 @@ void check_input_argument(int argc, char *argv[])
         printf("[ERROR] Invalid argv\n");
         exit(1);
     }
+
+    gateway_main.base_port = port;
+    gateway_main.http_port = http;
 
     char temp[70];
     snprintf(temp, sizeof(temp), "Gateway started (TCP base port %d, HTTP port %d)", port, http);
