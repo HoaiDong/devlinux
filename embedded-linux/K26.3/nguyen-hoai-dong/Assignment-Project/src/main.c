@@ -12,8 +12,9 @@
 #include "data_type.h"
 #include "log_process.h"
 
-gateway_t gateway_main;
+gateway_t gateway_main = {0};
 pthread_mutex_t mutex_stop_flag = PTHREAD_MUTEX_INITIALIZER;
+sbuffer_t sbuffer = {0};
 
 static void debug_log(char *input)
 {
@@ -62,6 +63,115 @@ void init_server_socket(void)
     }
 }
 
+void init_all_connection(void)
+{
+    for(int i = 0; i < MAX_CONN; i++)
+    {
+        gateway_main.conn.conns[i].fd = -1;
+    }
+
+    gateway_main.conn.n_conns = 0;
+}
+
+int get_index_client_connection(int fd)
+{
+    for(int i = 0; i < MAX_CONN; i++)
+    {
+        if(gateway_main.conn.conns[i].fd == fd)
+            return i;
+    }
+    return -1;
+}
+
+void add_new_conenction(int fd, int *epfd)
+{
+    struct epoll_event sensor = {0};
+    sensor.events = EPOLLIN;
+    sensor.data.fd = fd;
+
+    for(int i = 0; i < MAX_CONN; i++)
+    {
+        if(gateway_main.conn.conns[i].fd == -1)
+        {
+            gateway_main.conn.conns[i].fd = fd;
+            epoll_ctl(*epfd, EPOLL_CTL_ADD, gateway_main.conn.conns[i].fd, &sensor);
+            memset(gateway_main.conn.conns[i].rx, 0, RX_BUF_SIZE);
+            gateway_main.conn.conns[i].rx_len = 0;
+            gateway_main.conn.conns[i].identified = false;
+            gateway_main.conn.conns[i].sensor_id = 0;
+            break;
+        }
+    }
+
+    gateway_main.conn.n_conns++;
+}
+
+void delete_connection(int fd, int *epfd)
+{
+    int index = get_index_client_connection(fd);
+    close(fd);
+    epoll_ctl(*epfd, EPOLL_CTL_DEL, fd, NULL);
+
+    gateway_main.conn.conns[index].fd = -1;
+    memset(gateway_main.conn.conns[index].rx, 0, RX_BUF_SIZE);
+    gateway_main.conn.conns[index].rx_len = 0;
+    gateway_main.conn.conns[index].identified = false;
+    gateway_main.conn.conns[index].sensor_id = 0;
+
+    gateway_main.conn.n_conns--;
+}
+
+void hanling_event_fd(int fd, int *epfd)
+{
+    for(int i = 0; i < MAX_LISTEN_FD; i++)
+    {
+        if (fd == gateway_main.conn.listen_fd[i])
+        {
+            if(gateway_main.conn.n_conns < MAX_CONN)
+            {
+                
+                int new_fd = accept(gateway_main.conn.listen_fd[i], NULL, NULL);
+                add_new_conenction(new_fd, epfd);
+                return;
+            }
+        }
+    }
+    
+    int index = get_index_client_connection(fd);
+
+    int return_value = recv(fd, gateway_main.conn.conns[index].rx, RX_BUF_SIZE, 0);
+    if(return_value == 0)
+    {
+        printf("[SENSOR] SENSOR disconnected\n");
+        delete_connection(fd, epfd);
+    } 
+    else if (return_value == -1)
+    {
+        printf("[ERROR] recv error\n");
+    }   
+    else
+    {
+        uint16_t sensor_id = 0;
+        double temperature = 0;
+        time_t sensor_ts;
+
+        memcpy(&sensor_id, gateway_main.conn.conns[index].rx, 2);
+        memcpy(&temperature, &gateway_main.conn.conns[index].rx[2], 8);
+        memcpy(&sensor_ts, &gateway_main.conn.conns[index].rx[10], 8);
+        
+        struct tm time_info;
+        char time_format[20];
+        localtime_r(&sensor_ts, &time_info);
+        strftime(time_format, sizeof(time_format), "%Y-%m-%d %H:%M:%S", &time_info);
+
+        char s[100];
+        memset(s, 0, sizeof(s));
+        
+        snprintf(s, sizeof(s), "Sensor ID: %d - Temperature: %0.1f - Time: %s", sensor_id, temperature, time_format);
+        debug_log(s);
+    }
+}
+
 void *pthread_connection_manager(void *arg)
 {
     (void)arg;
@@ -71,10 +181,9 @@ void *pthread_connection_manager(void *arg)
 
     printf("Server listening port: %d\n", gateway_main.base_port);
 
-    
+    init_all_connection();
     init_server_socket();
-
-    uint8_t buffer[100];    
+   
     int epfd = epoll_create1(0);
     for(int i = 0; i < MAX_LISTEN_FD; i++)
     {
@@ -84,85 +193,26 @@ void *pthread_connection_manager(void *arg)
         epoll_ctl(epfd, EPOLL_CTL_ADD, gateway_main.conn.listen_fd[i], &ev);
     }
 
-    int sensor_fd[MAX_CONN];
-    int sensor_fd_index = 0;
-    memset(sensor_fd, -2, sizeof(sensor_fd));
-
-    bool new_connection = 0;
     while(1)
     {
         struct epoll_event events[10];
         int n = epoll_wait(epfd, events, 10, 100);
         for (int i = 0; i < n; i++)
         {
-            new_connection = 0;
             int fd = events[i].data.fd;
 
-            for(int i = 0; i < MAX_LISTEN_FD; i++)
-            {
-                if (fd == gateway_main.conn.listen_fd[i])
-                {
-                    if(sensor_fd_index < MAX_CONN)
-                    {
-                        sensor_fd[sensor_fd_index] = accept(gateway_main.conn.listen_fd[i], NULL, NULL);
-                        struct epoll_event sensor = {0};
-                        sensor.events = EPOLLIN;
-                        sensor.data.fd = sensor_fd[sensor_fd_index];
-                        epoll_ctl(epfd, EPOLL_CTL_ADD, sensor_fd[sensor_fd_index], &sensor);
-                        sensor_fd_index++;
-                        new_connection = 1;
-                        break;
-                    }
-                }
-            }
-
-            if(new_connection == 1)
-                continue;
-            
-            {
-                int return_value = recv(fd, buffer, sizeof(buffer), 0);
-                if(return_value == 0)
-                {
-                    printf("[SENSOR] SENSOR disconnected\n");
-                    epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
-                    close(fd);
-                } 
-                else if (return_value == -1)
-                {
-                    printf("[ERROR] recv error\n");
-                }   
-                else
-                {
-                    uint16_t sensor_id = 0;
-                    double temperature = 0;
-                    time_t sensor_ts;
-
-                    memcpy(&sensor_id, buffer, 2);
-                    memcpy(&temperature, &buffer[2], 8);
-                    memcpy(&sensor_ts, &buffer[10], 8);
-                    
-                    struct tm time_info;
-                    char time_format[20];
-                    localtime_r(&sensor_ts, &time_info);
-                    strftime(time_format, sizeof(time_format), "%Y-%m-%d %H:%M:%S", &time_info);
-
-                    char s[100];
-                    memset(s, 0, sizeof(s));
-                    
-                    snprintf(s, sizeof(s), "Sensor ID: %d - Temperature: %0.1f - Time: %s", sensor_id, temperature, time_format);
-                    debug_log(s);
-                }
-            }
+            hanling_event_fd(fd, &epfd);
         }
 
         if(check_stop_flag() == 1)
             break;
     }
     
-    for(int i = 0; i < sensor_fd_index; i++)
+    for(int i = 0; i < MAX_CONN; i++)
     {
-        close(sensor_fd[i]);
+        close(gateway_main.conn.conns[i].fd);
     }
+
     for(int i = 0; i < MAX_LISTEN_FD; i++)
     {
         close(gateway_main.conn.listen_fd[i]);
@@ -308,6 +358,12 @@ void join_thread(pthread_t *thread_manager)
     }
 }
 
+void init_sbuffer(void)
+{
+    sbuffer.head = NULL;
+    sbuffer.tail = NULL;
+
+}
 
 int main(int argc, char *argv[])
 {

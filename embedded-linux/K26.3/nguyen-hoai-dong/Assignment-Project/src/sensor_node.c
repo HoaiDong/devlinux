@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     int return_value = 0;   
     int period = 0;
 
-    if(argc < 7)
+    if(argc < 6)
     {
         debug_log("[ERROR] Missing or invalid argc");
         exit(1);
@@ -129,17 +129,17 @@ int main(int argc, char *argv[])
 
     init_signal();
 
-    sensor.id = atoi(argv[1]);
+    sensor.id = atoi(argv[2]);
 
-    if(strcmp(argv[2], "temperature") == 0)
+    if(strcmp(argv[1], "temperature") == 0)
         sensor.type = SENSOR_TEMPERATURE;
-    else if(strcmp(argv[2], "humidity") == 0)
+    else if(strcmp(argv[1], "humidity") == 0)
         sensor.type = SENSOR_HUMIDITY;
-    else if(strcmp(argv[2], "motion") == 0)
+    else if(strcmp(argv[1], "motion") == 0)
         sensor.type = SENSOR_MOTION;
-    else if(strcmp(argv[2], "door") == 0)
+    else if(strcmp(argv[1], "door") == 0)
         sensor.type = SENSOR_DOOR;
-    else if(strcmp(argv[2], "smoke_gas") == 0)
+    else if(strcmp(argv[1], "smoke_gas") == 0)
         sensor.type = SENSOR_SMOKE_GAS;
     else
     {
@@ -148,7 +148,6 @@ int main(int argc, char *argv[])
     }
 
     
-
     int client_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(client_fd == -1)
     {
@@ -156,13 +155,13 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    period = atoi(argv[6]) / 1000;
+    period = atoi(argv[5]) / 1000;
 
-    int port = atoi(argv[5]);
+    int port = atoi(argv[4]);
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    if (inet_pton(AF_INET, argv[4], &addr.sin_addr) != 1)
+    if (inet_pton(AF_INET, argv[3], &addr.sin_addr) != 1)
     {
         debug_log("[ERROR] inet_pton error");
         close(client_fd);
